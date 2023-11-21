@@ -20,7 +20,13 @@ from peft import prepare_model_for_kbit_training, LoraConfig, get_peft_model
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 
-model_id = "NousResearch/Nous-Hermes-llama-2-13b"
+model_id = "teknium/OpenHermes-2.5-Mistral-7B"
+# Choices:
+# teknium/OpenHermes-2.5-Mistral-7B
+# NousResearch/Nous-Hermes-llama-2-7b
+# NousResearch/Nous-Hermes-Llama2-13b
+
+
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -67,12 +73,15 @@ data = load_dataset("RafaelMPereira/HealthCareMagic-100k-Chat-Format-en")
 # Depending on dataset, the processing of columns here will be different.
 data = data.map(lambda samples: tokenizer(samples["text"]), batched=True)
 
+# Letting user determine the run name to be recorded on wandb
+run_name = input("Please enter a new run name of your choice: ")
+
 trainer = transformers.Trainer(
     model=model,
     train_dataset=data["train"],
 
     args=transformers.TrainingArguments(
-        run_name="healthcaremagic100k_run3_low_lr",
+        run_name=run_name,
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
         warmup_steps=10,
