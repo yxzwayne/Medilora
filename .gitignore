@@ -28,3 +28,5 @@ models/
 # Logs and databases
 *.log
 *.sqlite
+
+*/wandb
