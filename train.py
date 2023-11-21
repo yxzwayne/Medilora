@@ -5,6 +5,15 @@ import wandb
 
 wandb.login()
 
+run_name = input("Type in the name of this training run to log on wandb: ")
+wandb.init(
+    entity="medilora",
+    project="medilora",
+    notes=run_name
+)
+
+steps = input("Determine the max_steps for this run (i.e. 100 or 200): ")
+
 # ===
 # most of this script follows this notebook:
 # https://colab.research.google.com/drive/1VoYNfYDKcKRQRor98Zbf2-9VQTtGJ24k?usp=sharing
@@ -27,7 +36,6 @@ model_id = "teknium/OpenHermes-2.5-Mistral-7B"
 # NousResearch/Nous-Hermes-Llama2-13b
 
 
-
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_use_double_quant=True,
@@ -36,6 +44,8 @@ bnb_config = BitsAndBytesConfig(
 )
 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
+tokenizer.pad_token = tokenizer.eos_token
+
 model = AutoModelForCausalLM.from_pretrained(
     model_id, quantization_config=bnb_config, device_map={"": 0}
 )
@@ -73,22 +83,18 @@ data = load_dataset("RafaelMPereira/HealthCareMagic-100k-Chat-Format-en")
 # Depending on dataset, the processing of columns here will be different.
 data = data.map(lambda samples: tokenizer(samples["text"]), batched=True)
 
-# Letting user determine the run name to be recorded on wandb
-run_name = input("Please enter a new run name of your choice: ")
-
 trainer = transformers.Trainer(
     model=model,
     train_dataset=data["train"],
 
     args=transformers.TrainingArguments(
-        run_name=run_name,
-        per_device_train_batch_size=1,
+        per_device_train_batch_size=128,
         gradient_accumulation_steps=4,
-        warmup_steps=10,
-        max_steps=20,
+        warmup_steps=20,
+        max_steps=int(steps),
         learning_rate=2e-4,
         fp16=True,
-        logging_steps=1,
+        logging_steps=2,
         output_dir="outputs",
         optim="paged_adamw_8bit",
         report_to="wandb"
