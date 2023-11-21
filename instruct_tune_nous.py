@@ -1,18 +1,34 @@
 # Author: Yuxuan Zhang
 # Created date: 11202023
 
+# === This script is called "from nous" because I will primarily use models from NousResearch.
+# Based institute, very nice.
+
 import wandb
 
+# === Weights and Bias Setup
 wandb.login()
 
+print(
+    "\n\n========== This is the script to instruction-train small models to answer medical diagnostic queries\n"
+)
 run_name = input("Type in the name of this training run to log on wandb: ")
+print()
+user_input_tags = input(
+    "Any more tags you want to register to w&b besides 'Nous' and 'Instruction Tuning'? (Separate with ','): "
+)
+print()
+user_input_tags = user_input_tags.split(",")
 wandb.init(
     entity="medilora",
     project="medilora",
-    notes=run_name
+    notes=run_name,
+    notes="",
+    tags=["Nous", "Instruction Tuning"].extend(user_input_tags),
 )
 
 steps = input("Determine the max_steps for this run (i.e. 100 or 200): ")
+print()
 
 # ===
 # most of this script follows this notebook:
@@ -30,10 +46,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 
 model_id = "teknium/OpenHermes-2.5-Mistral-7B"
-# Choices:
-# teknium/OpenHermes-2.5-Mistral-7B
-# NousResearch/Nous-Hermes-llama-2-7b
-# NousResearch/Nous-Hermes-Llama2-13b
 
 
 bnb_config = BitsAndBytesConfig(
@@ -69,16 +81,24 @@ def print_trainable_parameters(model):
     )
 
 
-# r=64 and alpha=16 was from the original QLoRA paper.
+# original QLoRA paper had the setting of r=64 and alpha=16
 config = LoraConfig(
-    r=64, lora_alpha=16, lora_dropout=0.05, bias="none", task_type="CAUSAL_LM"
+    r=16, lora_alpha=16, lora_dropout=0.05, bias="none", task_type="CAUSAL_LM"
 )
 
 model = get_peft_model(model, config)
 print_trainable_parameters(model)
 
 
-data = load_dataset("RafaelMPereira/HealthCareMagic-100k-Chat-Format-en")
+def prepare_sample_text(example):
+    """Prepare the text from a sample of the dataset."""
+    text = f"Question: {example['question']}\n\nAnswer: {example['response_j']}" # Change the format here as needed
+    return text
+
+
+data = load_dataset("yxzwayne/USMedicalLicenseExamsTextbooks")
+
+
 
 # Depending on dataset, the processing of columns here will be different.
 data = data.map(lambda samples: tokenizer(samples["text"]), batched=True)
@@ -86,18 +106,18 @@ data = data.map(lambda samples: tokenizer(samples["text"]), batched=True)
 trainer = transformers.Trainer(
     model=model,
     train_dataset=data["train"],
-
     args=transformers.TrainingArguments(
-        per_device_train_batch_size=128,
-        gradient_accumulation_steps=4,
-        warmup_steps=20,
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=2,
+        warmup_steps=36,
         max_steps=int(steps),
-        learning_rate=2e-4,
+        learning_rate=2e-5,
         fp16=True,
         logging_steps=2,
-        output_dir="outputs",
         optim="paged_adamw_8bit",
-        report_to="wandb"
+        report_to="wandb",
+        output_dir="from_nous",
+        push_to_hub=True,
     ),
     data_collator=transformers.DataCollatorForLanguageModeling(tokenizer, mlm=False),
 )
