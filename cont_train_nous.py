@@ -156,3 +156,4 @@ model = model.merge_and_unload()
 output_merged_dir = os.path.join(output_dir, "final_merged_checkpoint")
 model.save_pretrained(output_merged_dir, safe_serialization=True)
 
+model.push_to_hub("OpenHermes-2.5-Mistral-7B-USMedLicenseTrained")
