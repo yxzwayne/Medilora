@@ -2,30 +2,33 @@
 
 Finetuning LLMs on medical text data to elicit differential diagnosis.
 
-## Logging the runs on wandb
+## Steps to take on a new instance
 
-run the following lines in CLI to initiate your wandb session on the machine:
-`wandb login`
-
-## Run the continued trianing script
-
-```
-accelerate config # will prompt you to define the training configuration
-accelerate launch cont_train_nous.py # launches training
-```
-
-## Sharing checkpoints to HuggingFace
-
-- (Make sure `transformers` is installed): `huggingface-cli login`
-- If using notebook, `pip install huggingface_hub`, then add:
+- `pip install -r requirements` (for logging the runs on wandb)
+- `wandb login`
+- `huggingface-cli login` (Connect HuggingFace for Data and Model sharing)
+- If using notebook, `pip install huggingface_hub`, then run the following in a cell:
 
 ```
 from huggingface_hub import notebook_login
-
 notebook_login()
 ```
 
-to a cell.
+## ToDo
+-[] fix sft script on multi-gpu server
+
+## Running continued training scripts
+
+`python3 train_continued_nous.py`
+
+- The script uses the base `trainer` from 🤗 Transformers and do not need accelerate.
+
+## Running Supervised Finetuning scripts
+
+```
+accelerate config # will prompt you to define the training configuration
+accelerate launch train_sft_nous.py # launches training
+```
 
 ## Related Work
 

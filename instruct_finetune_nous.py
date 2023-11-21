@@ -95,7 +95,6 @@ def prepare_sample_text(example):
     text = f"Question: {example['question']}\n\nAnswer: {example['response_j']}" # Change the format here as needed
     return text
 
-
 data = load_dataset("yxzwayne/USMedicalLicenseExamsTextbooks")
 
 
