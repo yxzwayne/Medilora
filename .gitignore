@@ -30,3 +30,8 @@ models/
 *.sqlite
 
 */wandb
+
+# We aim to upload dataset files to HF hub as soon as we finish processing them
+# So we prevent adding data files to git.
+*/*.txt
+*/*.csv

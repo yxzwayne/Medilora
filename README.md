@@ -4,7 +4,9 @@ Finetuning LLMs on medical text data to elicit differential diagnosis.
 
 ## Steps to take on a new instance
 
-- `pip install -r requirements` (for logging the runs on wandb)
+Because we use axolotl, we don't need to use the requirements. It comes with wandb
+
+- ~~`pip install -r requirements` (for logging the runs on wandb)~~
 - `wandb login`
 - `huggingface-cli login` (Connect HuggingFace for Data and Model sharing)
 - If using notebook, `pip install huggingface_hub`, then run the following in a cell:
@@ -14,23 +16,12 @@ from huggingface_hub import notebook_login
 notebook_login()
 ```
 
-## ToDo
--[] fix sft script on multi-gpu server
+## Using Axolotl
+For using axolotl, refer to their official documentation, but here is the commands we use:
 
-## Running continued training scripts
+- `accelerate launch -m axolotl.cli.train qlora.yml --deepspeed deepspeed/zero3.json` (if there's a problem, get rid of the --deepspeed flag as well.)
 
-`python3 train_continued_nous.py`
-
-- The script uses the base `trainer` from 🤗 Transformers and do not need accelerate.
-
-## Running Supervised Finetuning scripts
-
-```
-accelerate config # will prompt you to define the training configuration
-accelerate launch train_sft_nous.py # launches training
-```
-
-## Related Work
+# Related Work
 
 ### [ChatDoctor](https://arxiv.org/pdf/2303.14070.pdf)
 
@@ -64,7 +55,9 @@ Classical literature. Uses GPT-2 architecture on various medical NLP tasks, not 
 
 ### HealthCareMagic
 
-The dataset used in the ChatDoctor paper. We use [lavita/ChatDoctor-HealthCareMagic-100k](https://huggingface.co/datasets/xDAN-datasets/ChatDoctor_HealthCareMagic_112k) from HF - Columns: `instruction`, `input`, `output` - Its instruction is hilarious and we should use our own.
+The dataset used in the **ChatDoctor** paper. 
+There are several versions of this dataset. We use [xDAN-datasets/ChatDoctor_HealthCareMagic_112k](https://huggingface.co/datasets/xDAN-datasets/ChatDoctor_HealthCareMagic_112k) from HF.
+ - Columns: `conversations`, `input`, `output` - We can use the conversations to 
 
 ### PubMedQA
 
