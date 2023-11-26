@@ -1,4 +1,4 @@
-base_model: yxzwayne/medilora-usmle-textbook-adapter
+base_model: Medilora/medilora-usmle-textbook-adapter
 model_type: MistralForCausalLM
 tokenizer_type: LlamaTokenizer
 is_mistral_derived_model: true
@@ -8,7 +8,7 @@ load_in_4bit: true
 strict: false
 
 datasets:
-  - path: yxzwayne/mimic_iii_diagnosis_anonymous
+  - path: Medilora/mimic_iii_diagnosis_anonymous
     type: completion
 dataset_prepared_path: last_run_prepared
 hub_model_id: medilora-mimic-adapter
