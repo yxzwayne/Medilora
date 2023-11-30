@@ -23,6 +23,10 @@ For using axolotl, refer to their official documentation, but here is the comman
 
 # Related Work
 
+## [MediTRON]()
+
+
+
 ### [ChatDoctor](https://arxiv.org/pdf/2303.14070.pdf)
 
 Their training set up for healthCareMagic-100k was 3 hours on 6 A100 GPUs.

@@ -31,7 +31,9 @@ models/
 
 */wandb
 
-# We aim to upload dataset files to HF hub as soon as we finish processing them
+# We aim to upload dataset files to HF hub or other units as soon as we finish processing them locally
 # So we prevent adding data files to git.
-*/*.txt
 */*.csv
+*/*.json
+*/*.jsonl
+*/*.parquet
