@@ -1,4 +1,4 @@
-base_model: Medilora/medilora-usmle-textbook-adapter
+base_model: Medilora/medilora-guideline-adapter
 model_type: MistralForCausalLM
 tokenizer_type: LlamaTokenizer
 is_mistral_derived_model: true
@@ -8,15 +8,17 @@ load_in_4bit: true
 strict: false
 
 datasets:
-  - path: Medilora/mimic_iii_diagnosis_anonymous
+  - path: ywchoi/pubmed_abstract_0
     type: completion
+    field: text
+
 dataset_prepared_path: last_run_prepared
-hub_model_id: medilora-mimic-adapter
+hub_model_id: Medilora/medilora-pubmed-abs-adapter-0
 val_set_size: 0.05
 output_dir: ./qlora-out
 
 adapter: qlora
-lora_model_dir:
+lora_model_dir: 
 
 sequence_len: 8192
 sample_packing: true
@@ -34,7 +36,7 @@ lora_target_modules:
 wandb_project: medilora
 wandb_entity: medilora
 wandb_watch:
-wandb_run_id: medilora_mimic_trial
+wandb_run_id: medilora_pubmed_abs_0
 wandb_log_model:
 
 gradient_accumulation_steps: 4
@@ -59,7 +61,7 @@ logging_steps: 1
 xformers_attention:
 flash_attention: true
 
-warmup_steps: 50
+warmup_steps: 100
 # eval_steps: 0.05
 # eval_table_size:
 # eval_table_max_new_tokens: 128
