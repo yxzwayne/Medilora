@@ -1,4 +1,4 @@
-base_model: Medilora/medilora-guideline-adapter
+base_model: Medilora/guideline-medilora-adapter
 model_type: MistralForCausalLM
 tokenizer_type: LlamaTokenizer
 is_mistral_derived_model: true
@@ -8,7 +8,7 @@ load_in_4bit: true
 strict: false
 
 datasets:
-  - path: Medilora/PubMedQA-ShareGPT
+  - path: Medilora/MedMCQA-ShareGPT
     type: sharegpt 
     # !!!!!! Remember to modify the system prompts at:
     # src/axolotl/prompt_strategies/sharegpt.py
@@ -17,7 +17,6 @@ datasets:
     field_model: assistant
 
 dataset_prepared_path: last_run_prepared
-hub_model_id: Medilora/pubmedqaa-medilora
 val_set_size: 0.05
 output_dir: ./qlora-out
 
@@ -43,14 +42,14 @@ wandb_watch:
 wandb_run_id:
 wandb_log_model:
 
+hub_model_id: Medilora/medilora-medqa-adapter
+
 gradient_accumulation_steps: 4
 micro_batch_size: 2
-num_epochs: 2
+num_epochs: 1
 optimizer: adamw_bnb_8bit
 lr_scheduler: cosine
 learning_rate: 0.0002
-
-# noisy_embedding_alpha: 5
 
 train_on_inputs: false
 group_by_length: false
@@ -66,7 +65,7 @@ logging_steps: 1
 xformers_attention:
 flash_attention: true
 
-warmup_steps: 100
+warmup_steps: 50
 eval_steps: 0.01
 eval_table_size:
 eval_table_max_new_tokens: 128
