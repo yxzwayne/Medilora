@@ -1,33 +1,32 @@
-base_model: Qwen/Qwen-14B
-model_type: AutoModelForCausalLM
-tokenizer_type: AutoTokenizer
-
-is_qwen_derived_model: true
-trust_remote_code: true
+base_model: Medilora/guideline-medilora-adapter
+model_type: MistralForCausalLM
+tokenizer_type: LlamaTokenizer
+is_mistral_derived_model: true
 
 load_in_8bit: false
 load_in_4bit: true
 strict: false
 
 datasets:
-  - path: Medilora/us_medical_license_exam_textbooks_en
-    type: completion
+  - path: Medilora/MedMCQA-ShareGPT
+    type: sharegpt 
+    # !!!!! Modify the system prompts at:
+    # src/axolotl/prompt_strategies/sharegpt.py
+    conversation: chatml
+    field_human: user
+    field_model: assistant
 
-# datasets:
-#   - path: Medilora/mimic_iii_diagnosis_anonymous
-#     type: completion
-
-dataset_prepared_path:
-hub_model_id: medilora_qwen_14B_completion
+dataset_prepared_path: last_run_prepared
 val_set_size: 0.05
-output_dir: ./lora-out
-
-sequence_len: 2048  # supports up to 8192
-sample_packing: false
-pad_to_sequence_len:
+output_dir: ./qlora-out
 
 adapter: qlora
 lora_model_dir:
+
+sequence_len: 8192
+sample_packing: true
+pad_to_sequence_len: true
+
 lora_r: 8
 lora_alpha: 16
 lora_dropout: 0.05
@@ -37,16 +36,17 @@ lora_target_modules:
   - q_proj
   - v_proj
 
-
 wandb_project: medilora
 wandb_entity: medilora
 wandb_watch:
-wandb_run_id: medilora_qwen_14B_completion
+wandb_run_id:
 wandb_log_model:
+
+hub_model_id: Medilora/medilora-medqa-adapter
 
 gradient_accumulation_steps: 4
 micro_batch_size: 2
-num_epochs: 4
+num_epochs: 1
 optimizer: adamw_bnb_8bit
 lr_scheduler: cosine
 learning_rate: 0.0002
@@ -57,7 +57,7 @@ bf16: true
 fp16: false
 tf32: false
 
-gradient_checkpointing: false
+gradient_checkpointing: true
 early_stopping_patience:
 resume_from_checkpoint:
 local_rank:
@@ -65,14 +65,17 @@ logging_steps: 1
 xformers_attention:
 flash_attention: true
 
-warmup_steps: 20
-eval_steps: 0.05
+warmup_steps: 50
+eval_steps: 0.01
 eval_table_size:
 eval_table_max_new_tokens: 128
 save_steps:
 debug:
-deepspeed: deepspeed/zero2.json
+deepspeed: deepspeed/zero3.json
 weight_decay: 0.0
 fsdp:
 fsdp_config:
 special_tokens:
+  bos_token: "<s>"
+  eos_token: "</s>"
+  unk_token: "<unk>"
