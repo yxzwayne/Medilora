@@ -5,27 +5,6 @@ Langauge model fine-tuning with limited datasets and Q-LoRA in data-limited scen
 [Code](https://github.com/yxzwayne/Medilora) | [Report](/report/Medilora_Final_Report.pdf)
 
 
-## References notes
-
-### Steps to take on a new instance
-
-Because we use axolotl, we don't need to use the requirements. It comes with wandb
-
-- ~~`pip install -r requirements` (for logging the runs on wandb)~~
-- `wandb login`
-- `huggingface-cli login` (Connect HuggingFace for Data and Model sharing)
-- If using notebook, `pip install huggingface_hub`, then run the following in a cell:
-
-```
-from huggingface_hub import notebook_login
-notebook_login()
-```
-
-### Using Axolotl
-For using axolotl, refer to their official documentation, but here is the commands we use:
-
-- `accelerate launch -m axolotl.cli.train qlora.yml --deepspeed deepspeed/zero3.json` (if there's a problem, get rid of the --deepspeed flag as well.)
-
 ### Model Checkpoints Considered
 
 - From Nous Research:
